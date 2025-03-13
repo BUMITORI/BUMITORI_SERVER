@@ -19,7 +19,7 @@ public class NonEnter {
     private String specificReason;
 
     @Column(columnDefinition = "BOOLEAN default false")
-    private Boolean approval = false;;
+    private Boolean approval = false;
 
     private String adminName;
 }
