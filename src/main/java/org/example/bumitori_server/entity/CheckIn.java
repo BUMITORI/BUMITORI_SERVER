@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -12,6 +14,6 @@ public class CheckIn {
     @Id
     private String rfid;
 
-    private String enterTime;
+    private LocalDateTime enterTime;
     private Integer enterStatus;
 }
