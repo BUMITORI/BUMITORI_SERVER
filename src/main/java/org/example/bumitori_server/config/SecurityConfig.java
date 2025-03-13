@@ -19,7 +19,6 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
-
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
@@ -28,35 +27,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        //csrf disable
-        http
-                .csrf((auth) -> auth.disable());
+        // CSRF 비활성화
+        http.csrf(auth -> auth.disable());
 
-        //From 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
+        // Form 로그인 방식 비활성화
+        http.formLogin(auth -> auth.disable());
 
-        //HTTP Basic 인증 방식 disable
-        http
-                .httpBasic((auth) -> auth.disable());
+        // HTTP Basic 인증 방식 비활성화
+        http.httpBasic(auth -> auth.disable());
 
-        //oauth2
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler));
+        // OAuth2 로그인 설정
+        http.oauth2Login(oauth2 ->
+                oauth2.userInfoEndpoint(userInfo ->
+                        userInfo.userService(customOAuth2UserService)).successHandler(customSuccessHandler));
 
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .anyRequest().authenticated());
+        // 경로별 인가 작업
+        http.authorizeHttpRequests(auth ->
+                auth.requestMatchers("/", "/admin/**").permitAll()
+                .anyRequest().authenticated());
 
-        //세션 설정 : STATELESS
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // 세션 관리: STATELESS (JWT 사용)
+        http.sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
