@@ -2,14 +2,12 @@ package org.example.bumitori_server.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
 @Setter
-public class NonEnter {
+public class Absent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
