@@ -15,5 +15,5 @@ public class CheckIn {
     private String rfid;
 
     private LocalDateTime enterTime;
-    private Integer enterStatus;
+    private String enterStatus;
 }
