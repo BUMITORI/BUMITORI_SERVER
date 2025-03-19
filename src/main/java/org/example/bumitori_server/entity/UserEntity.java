@@ -22,7 +22,7 @@ public class UserEntity {
     private String role;
 
     private String rfid;
-    private Integer student_no;
-    private String room_id;
+    private Integer studentNo;
+    private String roomId;
     private String gender;
 }
