@@ -14,9 +14,7 @@ public class CheckIn {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long checkInId;
 
-  @OneToOne
-  @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false, unique = true)
-  private UserEntity user;
+  private Long userId;
 
   private LocalDateTime enterTime;
 

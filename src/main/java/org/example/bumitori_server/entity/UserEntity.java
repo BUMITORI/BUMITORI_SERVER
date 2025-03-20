@@ -21,7 +21,6 @@ public class UserEntity {
 
   private String rfid;
 
-  @Column(unique = true, nullable = false)
   private Integer studentNo;
 
   private String roomId;
