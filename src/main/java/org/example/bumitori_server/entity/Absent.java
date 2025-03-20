@@ -8,16 +8,25 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Absent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private Integer studentId;
-    private String reason;
-    private String specificReason;
+  @ManyToOne
+  @JoinColumn(name = "studentNo", referencedColumnName = "studentNo", nullable = false)
+  private UserEntity user;
 
-    @Column(columnDefinition = "BOOLEAN default false")
-    private Boolean approval = false;
+  @Enumerated(EnumType.STRING)
+  private Reason reason;
 
-    private String adminName;
+  private String specificReason;
+
+  @Column(columnDefinition = "BOOLEAN default false")
+  private Boolean approval = false;
+
+  private String adminName;
+
+  public enum Reason {
+    SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
+  }
 }
