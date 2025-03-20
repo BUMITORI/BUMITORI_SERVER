@@ -10,11 +10,9 @@ import lombok.Setter;
 public class Absent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long absentId;
 
-  @ManyToOne
-  @JoinColumn(name = "studentNo", referencedColumnName = "studentNo", nullable = false)
-  private UserEntity user;
+  private Long userId;
 
   @Enumerated(EnumType.STRING)
   private Reason reason;
