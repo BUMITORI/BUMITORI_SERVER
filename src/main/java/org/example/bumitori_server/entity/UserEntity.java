@@ -1,9 +1,6 @@
 package org.example.bumitori_server.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,18 +8,31 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long userId;
 
-    private String username;
-    private String name;
-    private String email;
+  private String username;
+  private String name;
+  private String email;
 
-    private String role;
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
-    private String rfid;
-    private Integer studentNo;
-    private String roomId;
-    private String gender;
+  private String rfid;
+
+  private Integer studentNo;
+
+  private String roomId;
+
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
+
+  public enum Role {
+    ADMIN, STUDENT
+  }
+
+  public enum Gender {
+    M, W
+  }
 }

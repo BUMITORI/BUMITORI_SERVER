@@ -43,7 +43,7 @@ public class SecurityConfig {
 
         // 경로별 인가 작업
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/", "/admin/**").permitAll()
+                auth.requestMatchers("/").permitAll()
                 .anyRequest().authenticated());
 
         // 세션 관리: STATELESS (JWT 사용)
