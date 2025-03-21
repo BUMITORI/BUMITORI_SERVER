@@ -1,7 +1,6 @@
 package org.example.bumitori_server.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +10,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CheckIn {
-    @Id
-    private String rfid;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long checkInId;
 
-    private LocalDateTime enterTime;
-    private String enterStatus;
+  private Long userId;
+
+  private LocalDateTime enterTime;
+
+  @Enumerated(EnumType.STRING)
+  private EnterStatus enterStatus;
+
+  public enum EnterStatus {
+    ENTERED, NON_ENTERED, ABSENT
+  }
 }
