@@ -4,27 +4,31 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
 public class Absent {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long absentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long absentId;
 
-  private Long userId;
+    private Long userId;
 
-  @Enumerated(EnumType.STRING)
-  private Reason reason;
+    @Enumerated(EnumType.STRING)
+    private Reason reason;
 
-  private String specificReason;
+    private String specificReason;
 
-  @Column(columnDefinition = "BOOLEAN default false")
-  private Boolean approval = false;
+    @Column(columnDefinition = "BOOLEAN default false")
+    private Boolean approval = false;
 
-  private String adminName;
+    private String adminName;
 
-  public enum Reason {
-    SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
-  }
+    private LocalDate absentDate;
+
+    public enum Reason {
+        SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
+    }
 }
