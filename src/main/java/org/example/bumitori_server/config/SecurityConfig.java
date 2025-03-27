@@ -36,15 +36,18 @@ public class SecurityConfig {
         // HTTP Basic 인증 방식 비활성화
         http.httpBasic(auth -> auth.disable());
 
-        // OAuth2 로그인 설정
+        /* OAuth2 로그인 설정 (테스트를 위해 비활성화)
         http.oauth2Login(oauth2 ->
                 oauth2.userInfoEndpoint(userInfo ->
                         userInfo.userService(customOAuth2UserService)).successHandler(customSuccessHandler));
+        */
 
         // 경로별 인가 작업
+
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/").permitAll()
-                .anyRequest().authenticated());
+                auth.requestMatchers("/", "/checkin", "/absent/request").permitAll() // checkin 엔드포인트 허용
+                        .anyRequest().authenticated());
+
 
         // 세션 관리: STATELESS (JWT 사용)
         http.sessionManagement(session ->
