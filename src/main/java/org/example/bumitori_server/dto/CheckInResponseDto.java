@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class CheckInResponseDto {
-    private Long userId;
+    private String email;
     private String name;
     private String roomId;
     private Gender gender;
