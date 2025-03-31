@@ -7,5 +7,5 @@ import java.time.LocalDate;
 
 public interface AbsentRepository extends JpaRepository<Absent, Long> {
 
-    boolean existsByUserIdAndAbsentDate(Long userId, LocalDate absentDate);
+    boolean existsByEmailAndAbsentDate(String email, LocalDate absentDate);
 }

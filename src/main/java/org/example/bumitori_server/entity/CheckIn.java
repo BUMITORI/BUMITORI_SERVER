@@ -14,7 +14,7 @@ public class CheckIn {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long checkInId;
 
-  private Long userId;
+  private String email;
 
   private LocalDateTime enterTime;
 
@@ -22,6 +22,6 @@ public class CheckIn {
   private EnterStatus enterStatus;
 
   public enum EnterStatus {
-    ENTERED, NON_ENTERED, ABSENT
+    ENTERED, NON_ENTER, ABSENT
   }
 }

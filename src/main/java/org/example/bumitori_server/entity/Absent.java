@@ -14,7 +14,7 @@ public class Absent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long absentId;
 
-    private Long userId;
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private Reason reason;
