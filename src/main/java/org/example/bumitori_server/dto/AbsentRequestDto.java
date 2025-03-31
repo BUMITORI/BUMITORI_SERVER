@@ -14,4 +14,5 @@ public class AbsentRequestDto {
     private String specificReason;
     private LocalDate absentDate;
     private Boolean approved;
+    private String name;
 }

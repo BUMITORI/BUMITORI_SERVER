@@ -29,7 +29,7 @@ public class AdminController {
     @PatchMapping("/absent/{absentId}")
     public ResponseEntity<Map<String, String>> approveAbsent(
             @PathVariable Long absentId, @RequestBody AbsentRequestDto requestDto) {
-        String message = adminService.approveAbsent(absentId, requestDto.getApproved());
+        String message = adminService.approveAbsent(absentId, requestDto.getApproved(), requestDto.getName());
         return ResponseEntity.ok(Map.of("message", message));
     }
 }
