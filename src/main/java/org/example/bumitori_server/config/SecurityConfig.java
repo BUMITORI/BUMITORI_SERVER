@@ -46,15 +46,15 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         */
 
-        // 🔹 경로별 인가 작업
+        // 경로별 인가 작업
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/", "/checkin", "/absent/request").permitAll() // 인증 없이 접근 가능
-                        .requestMatchers("/admin/**").permitAll() // 관리자 페이지 접근 가능 (테스트용)
-                        .anyRequest().authenticated());
+            auth.requestMatchers("/", "/checkin", "/absent/request").permitAll() // 인증 없이 접근 가능
+                .requestMatchers("/admin/**").permitAll() // 관리자 페이지 접근 가능 (테스트용)
+                .anyRequest().authenticated());
 
         // 세션 관리: STATELESS (JWT 사용 예정)
         http.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

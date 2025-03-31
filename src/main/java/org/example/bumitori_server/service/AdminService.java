@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.example.bumitori_server.dto.AbsentResponseDto;
 import org.example.bumitori_server.entity.Absent;
+import org.example.bumitori_server.entity.CheckIn;
 import org.example.bumitori_server.entity.UserEntity;
 import org.example.bumitori_server.repository.AbsentRepository;
+import org.example.bumitori_server.repository.CheckInRepository;
 import org.example.bumitori_server.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class AdminService {
     private final AbsentRepository absentRepository;
     private final UserRepository userRepository;
+    private final CheckInRepository checkInRepository;
 
     public List<AbsentResponseDto> getAbsentRequests() {
         return absentRepository.findAll().stream()
@@ -30,17 +33,24 @@ public class AdminService {
         return convertToDto(absent);
     }
 
-    public String approveAbsent(Long absentId, Boolean approved) {
+    public String approveAbsent(Long absentId, Boolean approved, String adminName) {
         Absent absent = absentRepository.findById(absentId)
             .orElseThrow(() -> new RuntimeException("미입사 신청을 찾을 수 없습니다."));
 
         absent.setApproval(approved);
+        absent.setAdminName(adminName);
         absentRepository.save(absent);
 
-        UserEntity user = userRepository.findByEmail((absent.getEmail()))
+        UserEntity user = userRepository.findByEmail(absent.getEmail())
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        return user.getName() + "님 미입사 신청이 " + "승인되었습니다.";
+        CheckIn checkIn = checkInRepository.findByEmail(user.getEmail())
+            .orElseThrow(() -> new RuntimeException("사용자의 checkIn 정보가 없습니다."));
+
+        checkIn.setEnterStatus(CheckIn.EnterStatus.ABSENT);
+        checkInRepository.save(checkIn);
+
+        return user.getName() + "님 미입사 신청이 승인되었습니다";
     }
 
     private AbsentResponseDto convertToDto(Absent absent) {

@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.bumitori_server.dto.CheckInResponseDto;
 import org.example.bumitori_server.entity.CheckIn;
 import org.example.bumitori_server.entity.UserEntity;
-import org.example.bumitori_server.repository.AbsentRepository;
 import org.example.bumitori_server.repository.CheckInRepository;
 import org.example.bumitori_server.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +29,14 @@ public class CommonService {
 
         return users.stream()
             .filter(user -> STUDENT.equals(user.getRole()))
+            .sorted(Comparator.comparing(UserEntity::getRoomId))
             .map(user -> {
                 CheckIn checkIn = checkInRepository.findByEmail(user.getEmail()).orElse(null);
 
-//                if (checkIn != null && checkIn.getEnterStatus() == ENTERED && !checkIn.getEnterTime().toLocalDate().equals(today)) {
-//                    checkIn.setEnterStatus(NON_ENTER);
-//                    checkInRepository.save(checkIn);
-//                }
+                if (checkIn != null && checkIn.getEnterStatus() == ENTERED && !checkIn.getEnterTime().toLocalDate().equals(today)) {
+                    checkIn.setEnterStatus(NON_ENTER);
+                    checkInRepository.save(checkIn);
+                }
 
                 return new CheckInResponseDto(
                     user.getEmail(),
@@ -44,8 +44,11 @@ public class CommonService {
                     user.getRoomId(),
                     user.getGender(),
                     checkIn != null ? checkIn.getEnterStatus() : null,
-                    checkIn != null ? checkIn.getEnterTime() : null
+                    (checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(LocalDate.now()))
+                        ? checkIn.getEnterTime()
+                        : null
                 );
+
             })
             .collect(Collectors.toList());
     }
