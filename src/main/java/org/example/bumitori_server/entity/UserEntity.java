@@ -9,12 +9,10 @@ import lombok.Setter;
 @Setter
 public class UserEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userId;
+  private String email;
 
   private String username;
   private String name;
-  private String email;
 
   @Enumerated(EnumType.STRING)
   private Role role;

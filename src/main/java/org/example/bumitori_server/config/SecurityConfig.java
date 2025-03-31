@@ -28,13 +28,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         // CSRF 비활성화
-        http.csrf(auth -> auth.disable());
+        http.csrf(csrf -> csrf.disable());
 
         // Form 로그인 방식 비활성화
-        http.formLogin(auth -> auth.disable());
+        http.formLogin(form -> form.disable());
 
         // HTTP Basic 인증 방식 비활성화
-        http.httpBasic(auth -> auth.disable());
+        http.httpBasic(httpBasic -> httpBasic.disable());
 
         /* OAuth2 로그인 설정 (테스트를 위해 비활성화)
         http.oauth2Login(oauth2 ->
@@ -42,14 +42,17 @@ public class SecurityConfig {
                         userInfo.userService(customOAuth2UserService)).successHandler(customSuccessHandler));
         */
 
-        // 경로별 인가 작업
+        /* JWT 인증 부분 주석 처리 (임시 비활성화)
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        */
 
+        // 🔹 경로별 인가 작업
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/", "/checkin", "/absent/request").permitAll() // checkin 엔드포인트 허용
+                auth.requestMatchers("/", "/checkin", "/absent/request").permitAll() // 인증 없이 접근 가능
+                        .requestMatchers("/admin/**").permitAll() // 관리자 페이지 접근 가능 (테스트용)
                         .anyRequest().authenticated());
 
-
-        // 세션 관리: STATELESS (JWT 사용)
+        // 세션 관리: STATELESS (JWT 사용 예정)
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
