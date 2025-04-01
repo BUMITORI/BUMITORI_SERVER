@@ -36,15 +36,15 @@ public class SecurityConfig {
         // HTTP Basic 인증 방식 비활성화
         http.httpBasic(httpBasic -> httpBasic.disable());
 
-        /* OAuth2 로그인 설정 (테스트를 위해 비활성화)
+        // OAuth2 로그인 설정 (테스트를 위해 비활성화)
         http.oauth2Login(oauth2 ->
                 oauth2.userInfoEndpoint(userInfo ->
                         userInfo.userService(customOAuth2UserService)).successHandler(customSuccessHandler));
-        */
 
-        /* JWT 인증 부분 주석 처리 (임시 비활성화)
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-        */
+
+        // JWT 인증 부분 주석 처리 (임시 비활성화)
+        //http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
 
         // 경로별 인가 작업
         http.authorizeHttpRequests(auth ->
