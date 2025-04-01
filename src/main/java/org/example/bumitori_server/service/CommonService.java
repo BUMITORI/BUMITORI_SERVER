@@ -31,7 +31,7 @@ public class CommonService {
             .filter(user -> STUDENT.equals(user.getRole()))
             .sorted(Comparator.comparing(UserEntity::getRoomId))
             .map(user -> {
-                CheckIn checkIn = checkInRepository.findByEmail(user.getEmail()).orElse(null);
+                CheckIn checkIn = checkInRepository.findByUserId(user.getUserId()).orElse(null);
 
                 if (checkIn != null && checkIn.getEnterStatus() == ENTERED && !checkIn.getEnterTime().toLocalDate().equals(today)) {
                     checkIn.setEnterStatus(NON_ENTER);

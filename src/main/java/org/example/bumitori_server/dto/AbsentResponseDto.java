@@ -11,11 +11,12 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 public class AbsentResponseDto {
-    private Long absentId;
-    private String name;
-    private String roomId;
-    private Reason reason;
-    private String specificReason;
-    private Boolean approval;
-    private LocalDate absentDate;
+  private Long userId;
+  private Long absentId;
+  private String name;
+  private String roomId;
+  private Reason reason;
+  private String specificReason;
+  private Boolean approval;
+  private LocalDate absentDate;
 }

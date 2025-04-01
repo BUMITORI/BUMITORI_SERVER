@@ -1,6 +1,5 @@
 package org.example.bumitori_server.dto;
 
-import org.example.bumitori_server.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -10,10 +9,10 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final UserDTO userDTO;
+    private final UserProfileDto userProfileDto;
 
-    public CustomOAuth2User(UserDTO userDTO){
-        this.userDTO = userDTO;
+    public CustomOAuth2User(UserProfileDto userProfileDto){
+        this.userProfileDto = userProfileDto;
     }
 
     @Override
@@ -29,7 +28,7 @@ public class CustomOAuth2User implements OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return userDTO.getRole().name();
+                return userProfileDto.getRole().name();
             }
         });
         return collection;
@@ -37,10 +36,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return userDTO.getName();
+        return userProfileDto.getName();
     }
 
     public String getUsername() {
-        return userDTO.getUsername();
+        return userProfileDto.getUsername();
     }
 }
