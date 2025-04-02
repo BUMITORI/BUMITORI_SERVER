@@ -10,25 +10,25 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Absent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long absentId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long absentId;
 
-    private String email;
+  private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    private Reason reason;
+  @Enumerated(EnumType.STRING)
+  private Reason reason;
 
-    private String specificReason;
+  private String specificReason;
 
-    @Column(columnDefinition = "BOOLEAN default false")
-    private Boolean approval = false;
+  @Column(columnDefinition = "BOOLEAN default false")
+  private Boolean approval = false;
 
-    private String adminName;
+  private String adminName;
 
-    private LocalDate absentDate;
+  private LocalDate absentDate;
 
-    public enum Reason {
-        SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
-    }
+  public enum Reason {
+    SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
+  }
 }
