@@ -31,10 +31,10 @@ public class CommonService {
     List<UserEntity> students = userRepository.findAll();
     List<Long> userIds = students.stream().map(UserEntity::getUserId).collect(Collectors.toList());
 
-    //모든 CheckIn 데이터 한 번에 조회 (쿼리 1번)
+    // 모든 CheckIn 데이터 한 번에 조회 (쿼리 1번)
     List<CheckIn> checkIns = checkInRepository.findByUserIdIn(userIds);
 
-    //Map으로 변환 (userId -> CheckIn 매핑)
+    // Map으로 변환 (userId -> CheckIn 매핑)
     Map<Long, CheckIn> checkInMap = checkIns.stream()
         .collect(Collectors.toMap(CheckIn::getUserId, checkIn -> checkIn));
 
@@ -50,9 +50,14 @@ public class CommonService {
             checkInRepository.save(checkIn);
           }
 
+          String roomId = user.getRoomId();
+          String roomPrefix = roomId.substring(0, 1);
+          String roomNumber = roomId.substring(1);
+
           return new CheckInResponseDto(
               user.getName(),
-              user.getRoomId(),
+              roomPrefix,
+              roomNumber,
               user.getGender(),
               checkIn != null ? checkIn.getEnterStatus() : null,
               (checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(today))
@@ -63,4 +68,3 @@ public class CommonService {
         .collect(Collectors.toList());
   }
 }
-

@@ -56,11 +56,16 @@ public class AdminService {
     UserEntity user = userRepository.findByUserId(absent.getUserId())
         .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+    String roomId = user.getRoomId();
+    String roomPrefix = roomId.substring(0, 1);
+    String roomNumber = roomId.substring(1);
+
     return new AbsentResponseDto(
         user.getUserId(),
         absent.getAbsentId(),
         user.getName(),
-        user.getRoomId(),
+        roomPrefix,
+        roomNumber,
         absent.getReason(),
         absent.getSpecificReason(),
         absent.getApproval(),
@@ -68,3 +73,5 @@ public class AdminService {
     );
   }
 }
+
+

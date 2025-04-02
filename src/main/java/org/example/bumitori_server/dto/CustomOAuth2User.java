@@ -9,37 +9,37 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final UserProfileDto userProfileDto;
+  private final UserProfileDto userProfileDto;
 
-    public CustomOAuth2User(UserProfileDto userProfileDto){
-        this.userProfileDto = userProfileDto;
-    }
+  public CustomOAuth2User(UserProfileDto userProfileDto) {
+    this.userProfileDto = userProfileDto;
+  }
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return null;
-    }
+  @Override
+  public Map<String, Object> getAttributes() {
+    return null;
+  }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Collection<GrantedAuthority> collection = new ArrayList<>();
+    Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return userProfileDto.getRole().name();
-            }
-        });
-        return collection;
-    }
+    collection.add(new GrantedAuthority() {
+      @Override
+      public String getAuthority() {
+        return userProfileDto.getRole().name();
+      }
+    });
+    return collection;
+  }
 
-    @Override
-    public String getName() {
-        return userProfileDto.getName();
-    }
+  @Override
+  public String getName() {
+    return userProfileDto.getName();
+  }
 
-    public String getUsername() {
-        return userProfileDto.getUsername();
-    }
+  public String getUsername() {
+    return userProfileDto.getUsername();
+  }
 }
