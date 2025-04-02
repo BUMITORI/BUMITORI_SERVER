@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.example.bumitori_server.entity.CheckIn.EnterStatus.ENTERED;
@@ -20,36 +21,46 @@ import static org.example.bumitori_server.entity.UserEntity.Role.STUDENT;
 @Service
 @RequiredArgsConstructor
 public class CommonService {
-    private final UserRepository userRepository;
-    private final CheckInRepository checkInRepository;
+  private final UserRepository userRepository;
+  private final CheckInRepository checkInRepository;
 
-    public List<CheckInResponseDto> getCheckInStatus() {
-        List<UserEntity> users = userRepository.findAll();
-        LocalDate today = LocalDate.now();
+  public List<CheckInResponseDto> getCheckInStatus() {
+    LocalDate today = LocalDate.now();
 
-        return users.stream()
-            .filter(user -> STUDENT.equals(user.getRole()))
-            .sorted(Comparator.comparing(UserEntity::getRoomId))
-            .map(user -> {
-                CheckIn checkIn = checkInRepository.findByUserId(user.getUserId()).orElse(null);
+    // 모든 학생 조회
+    List<UserEntity> students = userRepository.findAll();
+    List<Long> userIds = students.stream().map(UserEntity::getUserId).collect(Collectors.toList());
 
-                if (checkIn != null && checkIn.getEnterStatus() == ENTERED && !checkIn.getEnterTime().toLocalDate().equals(today)) {
-                    checkIn.setEnterStatus(NON_ENTER);
-                    checkInRepository.save(checkIn);
-                }
+    //모든 CheckIn 데이터 한 번에 조회 (쿼리 1번)
+    List<CheckIn> checkIns = checkInRepository.findByUserIdIn(userIds);
 
-                return new CheckInResponseDto(
-                    user.getEmail(),
-                    user.getName(),
-                    user.getRoomId(),
-                    user.getGender(),
-                    checkIn != null ? checkIn.getEnterStatus() : null,
-                    (checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(LocalDate.now()))
-                        ? checkIn.getEnterTime()
-                        : null
-                );
+    //Map으로 변환 (userId -> CheckIn 매핑)
+    Map<Long, CheckIn> checkInMap = checkIns.stream()
+        .collect(Collectors.toMap(CheckIn::getUserId, checkIn -> checkIn));
 
-            })
-            .collect(Collectors.toList());
-    }
+    return students.stream()
+        .filter(user -> user.getRole() == STUDENT)
+        .sorted(Comparator.comparing(UserEntity::getRoomId))
+        .map(user -> {
+          CheckIn checkIn = checkInMap.get(user.getUserId());
+
+          if (checkIn != null && checkIn.getEnterStatus() == ENTERED
+              && !checkIn.getEnterTime().toLocalDate().equals(today)) {
+            checkIn.setEnterStatus(NON_ENTER);
+            checkInRepository.save(checkIn);
+          }
+
+          return new CheckInResponseDto(
+              user.getName(),
+              user.getRoomId(),
+              user.getGender(),
+              checkIn != null ? checkIn.getEnterStatus() : null,
+              (checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(today))
+                  ? checkIn.getEnterTime()
+                  : null
+          );
+        })
+        .collect(Collectors.toList());
+  }
 }
+
