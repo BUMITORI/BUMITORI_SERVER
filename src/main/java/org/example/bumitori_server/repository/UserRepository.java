@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
   Optional<UserEntity> findByRfid(String rfid);
   Optional<UserEntity> findByUserId(Long userId);
-
+  Optional<UserEntity> findByEmail(String email);
 }
 
 

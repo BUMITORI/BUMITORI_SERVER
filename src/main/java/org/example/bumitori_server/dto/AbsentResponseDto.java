@@ -14,7 +14,8 @@ public class AbsentResponseDto {
   private Long userId;
   private Long absentId;
   private String name;
-  private String roomId;
+  private String roomPrefix;
+  private String roomNumber;
   private Reason reason;
   private String specificReason;
   private Boolean approval;

@@ -2,11 +2,11 @@ package org.example.bumitori_server.dto;
 
 public interface OAuth2Response {
 
-    String getProvider();
+  String getProvider();
 
-    String getProviderId();
+  String getProviderId();
 
-    String getEmail();
+  String getEmail();
 
-    String getName();
+  String getName();
 }

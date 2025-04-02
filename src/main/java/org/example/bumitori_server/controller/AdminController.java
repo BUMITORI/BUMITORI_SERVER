@@ -16,6 +16,12 @@ import java.util.Map;
 public class AdminController {
     private final AdminService adminService;
 
+  @GetMapping("/")
+  @ResponseBody
+  public String v(){
+    return "asfd";
+  }
+
     @GetMapping("/absent")
     public ResponseEntity<List<AbsentResponseDto>> getAbsentRequests() {
         return ResponseEntity.ok(adminService.getAbsentRequests());
