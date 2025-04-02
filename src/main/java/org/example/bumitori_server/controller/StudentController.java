@@ -15,7 +15,7 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping("/checkin")
-    String checkIn(@RequestParam String rfid) {
+    Long checkIn(@RequestParam String rfid) {
         return studentService.getEmailByRfid(rfid);
     }
 

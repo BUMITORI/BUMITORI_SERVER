@@ -3,8 +3,10 @@ package org.example.bumitori_server.service;
 import org.example.bumitori_server.dto.CustomOAuth2User;
 import org.example.bumitori_server.dto.GoogleResponse;
 import org.example.bumitori_server.dto.OAuth2Response;
-import org.example.bumitori_server.dto.UserDTO;
+import org.example.bumitori_server.dto.UserProfileDto;
+import org.example.bumitori_server.entity.UserAccount;
 import org.example.bumitori_server.entity.UserEntity;
+import org.example.bumitori_server.repository.UserAccountRepository;
 import org.example.bumitori_server.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -15,55 +17,56 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
+  private final UserAccountRepository userAccountRepository;
 
-    public CustomOAuth2UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+  public CustomOAuth2UserService(UserRepository userRepository, UserAccountRepository userAccountRepository) {
+    this.userRepository = userRepository;
+    this.userAccountRepository = userAccountRepository;
+  }
+
+  @Override
+  public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+
+    OAuth2User oAuth2User = super.loadUser(userRequest);
+    System.out.println(oAuth2User);
+
+    String provider = userRequest.getClientRegistration().getRegistrationId();
+    OAuth2Response oAuth2Response = null;
+    oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+
+    String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+    UserAccount existData = userAccountRepository.findByUsername(username);
+
+    if (existData == null) {
+
+      UserAccount userAccount = new UserAccount();
+      userAccount.setUsername(username);
+      userAccount.setEmail(oAuth2Response.getEmail());
+
+      userAccountRepository.save(userAccount);
+
+      UserProfileDto userProfileDto = new UserProfileDto();
+      userProfileDto.setUsername(username);
+      userProfileDto.setName(oAuth2Response.getName());
+      userProfileDto.setRole(UserEntity.Role.STUDENT);
+      userProfileDto.setEmail(oAuth2Response.getEmail());
+
+
+      return new CustomOAuth2User(userProfileDto);
+    } else {
+
+      existData.setEmail(oAuth2Response.getEmail());
+
+      userAccountRepository.save(existData);
+
+      UserProfileDto userProfileDto = new UserProfileDto();
+      userProfileDto.setUsername(username);
+      userProfileDto.setName(oAuth2Response.getName());
+      userProfileDto.setRole(UserEntity.Role.STUDENT);
+      userProfileDto.setEmail(oAuth2Response.getEmail());
+
+      return new CustomOAuth2User(userProfileDto);
     }
-
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println(oAuth2User);
-
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
-        oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByUsername(username);
-
-        if (existData == null) {
-
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername(username);
-            userEntity.setEmail(oAuth2Response.getEmail());
-            userEntity.setName(oAuth2Response.getName());
-            userEntity.setRole(UserEntity.Role.STUDENT);
-
-            userRepository.save(userEntity);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(UserEntity.Role.STUDENT);
-
-            return new CustomOAuth2User(userDTO);
-        }
-        else {
-
-            existData.setEmail(oAuth2Response.getEmail());
-            existData.setName(oAuth2Response.getName());
-
-            userRepository.save(existData);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(existData.getUsername());
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(existData.getRole());
-
-            return new CustomOAuth2User(userDTO);
-        }
-    }
+  }
 }

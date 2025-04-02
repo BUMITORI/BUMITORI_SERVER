@@ -14,7 +14,7 @@ public class CheckIn {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long checkInId;
 
-  private String email;
+  private Long userId;
 
   private LocalDateTime enterTime;
 

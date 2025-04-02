@@ -21,32 +21,32 @@ public class StudentService {
     private final CheckInRepository checkInRepository;
     private final AbsentRepository absentRepository;
 
-    public String getEmailByRfid(String rfid) {
+    public Long getEmailByRfid(String rfid) {
         Optional<UserEntity> user = userRepository.findByRfid(rfid);
 
         if (user.isEmpty()) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
-        String eamil = user.get().getEmail();
-        Optional<CheckIn> checkIn = checkInRepository.findByEmail(eamil);
+        Long userId = user.get().getUserId();
+        Optional<CheckIn> checkIn = checkInRepository.findByUserId(userId);
 
         if (checkIn.isPresent() && checkIn.get().getEnterStatus().equals(ENTERED)) {
             throw new RuntimeException("이미 체크인 되어 있습니다.");
         }
 
         CheckIn newCheckIn = new CheckIn();
-        newCheckIn.setEmail(eamil);
+        newCheckIn.setUserId(userId);
         newCheckIn.setEnterStatus(ENTERED);
         newCheckIn.setEnterTime(LocalDateTime.now());
 
         checkInRepository.save(newCheckIn);
 
-        return eamil;
+        return userId;
     }
 
     public void AbsentRequest(AbsentRequestDto requestDto) {
-        Optional<UserEntity> user = userRepository.findByEmail(requestDto.getEmail());
+        Optional<UserEntity> user = userRepository.findByUserId(requestDto.getUserId());
         if (user.isEmpty()) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
@@ -55,15 +55,15 @@ public class StudentService {
             throw new RuntimeException("미입사 날짜는 일요일만 가능합니다.");
         }
 
-        boolean isAlreadyRequested = absentRepository.existsByEmailAndAbsentDate(
-            requestDto.getEmail(), requestDto.getAbsentDate()
+        boolean isAlreadyRequested = absentRepository.existsByUserIdAndAbsentDate(
+            requestDto.getUserId(), requestDto.getAbsentDate()
         );
         if (isAlreadyRequested) {
             throw new RuntimeException("이미 해당 날짜에 미입사 신청이 존재합니다.");
         }
 
         Absent absent = new Absent();
-        absent.setEmail(requestDto.getEmail());
+        absent.setUserId(requestDto.getUserId());
         absent.setReason(requestDto.getReason());
         absent.setSpecificReason(requestDto.getSpecificReason());
         absent.setAbsentDate(requestDto.getAbsentDate());
