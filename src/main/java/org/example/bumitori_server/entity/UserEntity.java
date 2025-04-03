@@ -28,10 +28,6 @@ public class UserEntity {
   @Enumerated(EnumType.STRING)
   private Gender gender;
 
-  public enum Role {
-    ADMIN, STUDENT
-  }
-
   public enum Gender {
     M, W
   }

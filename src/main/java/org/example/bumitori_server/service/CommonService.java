@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.example.bumitori_server.entity.CheckIn.EnterStatus.ENTERED;
 import static org.example.bumitori_server.entity.CheckIn.EnterStatus.NON_ENTER;
-import static org.example.bumitori_server.entity.UserEntity.Role.STUDENT;
+import static org.example.bumitori_server.entity.Role.STUDENT;
 
 @Service
 @RequiredArgsConstructor
