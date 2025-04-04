@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.bumitori_server.dto.AbsentResponseDto;
 import org.example.bumitori_server.service.AdminService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Secured("ADMIN")
 @RequestMapping("/admin")
 public class AdminController {
   private final AdminService adminService;
