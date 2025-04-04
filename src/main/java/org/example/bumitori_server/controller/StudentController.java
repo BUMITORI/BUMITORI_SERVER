@@ -2,11 +2,13 @@ package org.example.bumitori_server.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bumitori_server.dto.AbsentRequestDto;
-import org.example.bumitori_server.dto.CheckInResponseDto;
 import org.example.bumitori_server.service.StudentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
 @RestController
@@ -16,12 +18,7 @@ public class StudentController {
 
     @PostMapping("/checkin")
     Long checkIn(@RequestParam String rfid) {
-        return studentService.getEmailByRfid(rfid);
-    }
-
-    @GetMapping("/absent")
-    String Absent() {
-        return "absent page";
+        return studentService.updateCheckInByRfid(rfid);
     }
 
     @PostMapping("/absent/request")

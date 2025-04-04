@@ -6,13 +6,14 @@ import org.example.bumitori_server.oauth2.CustomSuccessHandler;
 import org.example.bumitori_server.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -44,10 +45,18 @@ public class SecurityConfig {
     http.oauth2Login(oauth2 ->
         oauth2.userInfoEndpoint(userInfo ->
                 userInfo.userService(customOAuth2UserService))
-            .successHandler(customSuccessHandler));
+            .successHandler(customSuccessHandler)
+            // 기본 로그인 페이지를 사용하지 않도록 loginPage() 설정
+            .loginPage("/oauth2/authorization/google")
+    );
 
     // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 전에 추가
     http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+    // 예외 처리: 인증 실패 시 401 Unauthorized 응답 반환 (리다이렉트 방지)
+    http.exceptionHandling(exception ->
+        exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+    );
 
     // 경로별 인가 설정
     http.authorizeHttpRequests(auth -> auth
