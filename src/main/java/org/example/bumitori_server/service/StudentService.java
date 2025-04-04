@@ -5,14 +5,14 @@ import org.example.bumitori_server.dto.AbsentRequestDto;
 import org.example.bumitori_server.entity.Absent;
 import org.example.bumitori_server.entity.CheckIn;
 import org.example.bumitori_server.entity.UserEntity;
-import org.example.bumitori_server.repository.*;
+import org.example.bumitori_server.repository.AbsentRepository;
+import org.example.bumitori_server.repository.CheckInRepository;
+import org.example.bumitori_server.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import static org.example.bumitori_server.entity.CheckIn.EnterStatus.ENTERED;
 
 @Service
 @RequiredArgsConstructor
@@ -21,31 +21,41 @@ public class StudentService {
     private final CheckInRepository checkInRepository;
     private final AbsentRepository absentRepository;
 
-    public Long getEmailByRfid(String rfid) {
-        Optional<UserEntity> user = userRepository.findByRfid(rfid);
+  public Long updateCheckInByRfid(String rfid) {
+    Optional<UserEntity> user = userRepository.findByRfid(rfid);
 
-        if (user.isEmpty()) {
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
-        }
-
-        Long userId = user.get().getUserId();
-        Optional<CheckIn> checkIn = checkInRepository.findByUserId(userId);
-
-        if (checkIn.isPresent() && checkIn.get().getEnterStatus().equals(ENTERED)) {
-            throw new RuntimeException("이미 체크인 되어 있습니다.");
-        }
-
-        CheckIn newCheckIn = new CheckIn();
-        newCheckIn.setUserId(userId);
-        newCheckIn.setEnterStatus(ENTERED);
-        newCheckIn.setEnterTime(LocalDateTime.now());
-
-        checkInRepository.save(newCheckIn);
-
-        return userId;
+    if (user.isEmpty()) {
+      throw new RuntimeException("사용자를 찾을 수 없습니다.");
     }
 
-    public void AbsentRequest(AbsentRequestDto requestDto) {
+    Long userId = user.get().getUserId();
+    Optional<CheckIn> checkIn = checkInRepository.findByUserId(userId);
+
+    if (checkIn.isPresent()) {
+      CheckIn existingCheckIn = checkIn.get();
+
+      if (existingCheckIn.getEnterStatus().equals(CheckIn.EnterStatus.ENTERED)) {
+        throw new RuntimeException("이미 체크인 되어 있습니다.");
+      }
+
+      existingCheckIn.setEnterStatus(CheckIn.EnterStatus.ENTERED);
+      existingCheckIn.setEnterTime(LocalDateTime.now());
+
+      checkInRepository.save(existingCheckIn);
+    } else {
+      CheckIn newCheckIn = new CheckIn();
+      newCheckIn.setUserId(userId);
+      newCheckIn.setEnterStatus(CheckIn.EnterStatus.ENTERED);
+      newCheckIn.setEnterTime(LocalDateTime.now());
+
+      checkInRepository.save(newCheckIn);
+    }
+
+    return userId;
+  }
+
+
+  public void AbsentRequest(AbsentRequestDto requestDto) {
         Optional<UserEntity> user = userRepository.findByUserId(requestDto.getUserId());
         if (user.isEmpty()) {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");

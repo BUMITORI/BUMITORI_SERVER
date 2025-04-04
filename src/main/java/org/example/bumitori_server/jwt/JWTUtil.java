@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,24 @@ public class JWTUtil {
   }
 
   public Long getUserIdFromToken(String token) {
-    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
-  }
+    Object userIdObj = Jwts.parser()
+        .verifyWith(secretKey)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload()
+        .get("userId");
+    if (userIdObj instanceof Number) {
+      return ((Number) userIdObj).longValue();
+    } else if (userIdObj instanceof String) {
+      return Long.parseLong((String) userIdObj);
+    } else {
+      throw new IllegalArgumentException("Invalid userId type in token");
+    }  }
 
   public String getRoleFromToken(String token) {
-    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    return Jwts.parser().verifyWith(secretKey)
+        .build().parseSignedClaims(token).getPayload()
+        .get("role", String.class);
   }
 
   public boolean validateToken(String token) {
@@ -48,10 +62,22 @@ public class JWTUtil {
   }
 
   public String resolveToken(HttpServletRequest request) {
+    // 우선 헤더에서 토큰 추출
     String bearerToken = request.getHeader("Authorization");
     if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7);
     }
+    // 헤더에 없으면 쿠키에서 토큰 추출
+    if (request.getCookies() != null) {
+      for (Cookie cookie : request.getCookies()) {
+        if ("Authorization".equals(cookie.getName())) {
+          return cookie.getValue();
+        }
+      }
+    }
+    System.out.println("sadfdas");
     return null;
   }
+
+
 }
