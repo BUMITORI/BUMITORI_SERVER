@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.example.bumitori_server.entity.CheckIn.EnterStatus.ENTERED;
-import static org.example.bumitori_server.entity.CheckIn.EnterStatus.NON_ENTER;
-import static org.example.bumitori_server.entity.Role.STUDENT;
+import static org.example.bumitori_server.enums.EnterStatus.ENTERED;
+import static org.example.bumitori_server.enums.EnterStatus.NON_ENTER;
+import static org.example.bumitori_server.enums.Role.STUDENT;
 
 @Service
 @RequiredArgsConstructor
@@ -54,16 +54,16 @@ public class CommonService {
           String roomPrefix = roomId.substring(0, 1);
           String roomNumber = roomId.substring(1);
 
-          return new CheckInResponseDto(
-              user.getName(),
-              roomPrefix,
-              roomNumber,
-              user.getGender(),
-              checkIn != null ? checkIn.getEnterStatus() : null,
-              (checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(today))
+          return CheckInResponseDto.builder()
+              .name(user.getName())
+              .roomPrefix(roomPrefix)
+              .roomNumber(roomNumber)
+              .gender(user.getGender())
+              .enterStatus(checkIn != null ? checkIn.getEnterStatus() : null)
+              .enterTime((checkIn != null && checkIn.getEnterTime() != null && checkIn.getEnterTime().toLocalDate().equals(today))
                   ? checkIn.getEnterTime()
-                  : null
-          );
+                  : null)
+              .build();
         })
         .collect(Collectors.toList());
   }

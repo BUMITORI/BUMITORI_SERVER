@@ -1,14 +1,17 @@
 package org.example.bumitori_server.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.example.bumitori_server.enums.EnterStatus;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CheckIn {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +23,4 @@ public class CheckIn {
 
   @Enumerated(EnumType.STRING)
   private EnterStatus enterStatus;
-
-  public enum EnterStatus {
-    ENTERED, NON_ENTER, ABSENT
-  }
 }
