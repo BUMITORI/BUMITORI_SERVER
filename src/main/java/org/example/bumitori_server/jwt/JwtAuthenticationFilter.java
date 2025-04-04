@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.bumitori_server.dto.CustomOAuth2User;
 import org.example.bumitori_server.dto.UserProfileDto;
-import org.example.bumitori_server.entity.Role;
+import org.example.bumitori_server.enums.Role;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -37,13 +37,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     if (jwtUtil.validateToken(token)) {
-      String role = jwtUtil.getRoleFromToken(token);
+      String roleStr = jwtUtil.getRoleFromToken(token);
       Long userId = jwtUtil.getUserIdFromToken(token);
 
+      Role role;
+      try {
+        role = Role.valueOf(roleStr.toUpperCase()); // 문자열을 Enum으로 변환 (대소문자 차이 방지)
+      } catch (IllegalArgumentException e) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+
       // CustomOAuth2User로 생성
-      UserProfileDto userProfileDto = new UserProfileDto();
-      userProfileDto.setUserId(userId);
-      userProfileDto.setRole(Role.valueOf(role));
+      UserProfileDto userProfileDto = UserProfileDto.builder()
+          .userId(userId)
+          .role(role)  // Enum 타입으로 전달
+          .build();
+
       CustomOAuth2User customOAuth2User = new CustomOAuth2User(userProfileDto);
 
       UsernamePasswordAuthenticationToken authentication =

@@ -1,12 +1,16 @@
 package org.example.bumitori_server.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.example.bumitori_server.enums.Gender;
+import org.example.bumitori_server.enums.Role;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +31,4 @@ public class UserEntity {
 
   @Enumerated(EnumType.STRING)
   private Gender gender;
-
-  public enum Gender {
-    M, W
-  }
 }

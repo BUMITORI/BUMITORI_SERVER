@@ -16,6 +16,5 @@ public class AbsentRequestDto {
   private Reason reason;
   private String specificReason;
   private LocalDate absentDate;
-  private Boolean approved;
   private String name;
 }

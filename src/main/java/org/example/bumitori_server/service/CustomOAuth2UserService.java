@@ -4,7 +4,7 @@ import org.example.bumitori_server.dto.CustomOAuth2User;
 import org.example.bumitori_server.dto.GoogleResponse;
 import org.example.bumitori_server.dto.OAuth2Response;
 import org.example.bumitori_server.dto.UserProfileDto;
-import org.example.bumitori_server.entity.Role;
+import org.example.bumitori_server.enums.Role;
 import org.example.bumitori_server.entity.UserAccount;
 import org.example.bumitori_server.repository.UserAccountRepository;
 import org.example.bumitori_server.repository.UserRepository;
@@ -27,46 +27,37 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
     OAuth2User oAuth2User = super.loadUser(userRequest);
     System.out.println(oAuth2User);
 
-    String provider = userRequest.getClientRegistration().getRegistrationId();
-    OAuth2Response oAuth2Response = null;
-    oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+    OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
 
     String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
     UserAccount existData = userAccountRepository.findByUsername(username);
 
     if (existData == null) {
-
-      UserAccount userAccount = new UserAccount();
-      userAccount.setUsername(username);
-      userAccount.setEmail(oAuth2Response.getEmail());
+      UserAccount userAccount = UserAccount.builder()
+          .username(username)
+          .email(oAuth2Response.getEmail())
+          .build();
 
       userAccountRepository.save(userAccount);
-
-      UserProfileDto userProfileDto = new UserProfileDto();
-      userProfileDto.setUsername(username);
-      userProfileDto.setName(oAuth2Response.getName());
-      userProfileDto.setRole(Role.STUDENT);
-      userProfileDto.setEmail(oAuth2Response.getEmail());
-
-
-      return new CustomOAuth2User(userProfileDto);
     } else {
-
-      existData.setEmail(oAuth2Response.getEmail());
+      existData = UserAccount.builder()
+          .username(existData.getUsername()) // 기존 username 유지
+          .email(oAuth2Response.getEmail()) // email 업데이트
+          .build();
 
       userAccountRepository.save(existData);
-
-      UserProfileDto userProfileDto = new UserProfileDto();
-      userProfileDto.setUsername(username);
-      userProfileDto.setName(oAuth2Response.getName());
-      userProfileDto.setRole(Role.STUDENT);
-      userProfileDto.setEmail(oAuth2Response.getEmail());
-
-      return new CustomOAuth2User(userProfileDto);
     }
+
+    UserProfileDto userProfileDto = UserProfileDto.builder()
+        .username(username)
+        .name(oAuth2Response.getName())
+        .role(Role.STUDENT)
+        .email(oAuth2Response.getEmail())
+        .build();
+
+    return new CustomOAuth2User(userProfileDto);
   }
 }

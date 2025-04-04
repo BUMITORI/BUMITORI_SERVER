@@ -1,8 +1,6 @@
-package org.example.bumitori_server.entity;
+package org.example.bumitori_server.enums;
 
-import lombok.Getter;
 
-@Getter
 public enum Role {
   ADMIN("ADMIN"),
   STUDENT("STUDENT");

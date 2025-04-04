@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.bumitori_server.entity.CheckIn.EnterStatus;
-import org.example.bumitori_server.entity.UserEntity.Gender;
+import org.example.bumitori_server.enums.EnterStatus;
+import org.example.bumitori_server.enums.Gender;
 
 import java.time.LocalDateTime;
 
