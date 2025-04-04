@@ -1,14 +1,16 @@
 package org.example.bumitori_server.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Absent {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +24,7 @@ public class Absent {
   private String specificReason;
 
   @Column(columnDefinition = "BOOLEAN default false")
+  @Builder.Default
   private Boolean approval = false;
 
   private String adminName;

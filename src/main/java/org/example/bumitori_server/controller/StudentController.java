@@ -21,9 +21,11 @@ public class StudentController {
         return studentService.updateCheckInByRfid(rfid);
     }
 
-    @PostMapping("/absent/request")
-    public ResponseEntity<Map<String, String>> requestAbsent(@RequestBody AbsentRequestDto requestDto) {
-        studentService.AbsentRequest(requestDto);
-        return ResponseEntity.ok(Map.of("message", "미입사 신청이 완료되었습니다"));
-    }
+  @PostMapping("/absent/request")
+  public ResponseEntity<Map<String, String>> requestAbsent(
+      @RequestBody AbsentRequestDto requestDto) {
+
+    studentService.AbsentRequest(requestDto);
+    return ResponseEntity.ok(Map.of("message", "미입사 신청이 완료되었습니다"));
+  }
 }

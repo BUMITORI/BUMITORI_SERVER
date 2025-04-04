@@ -22,7 +22,6 @@ public class CustomOAuth2User implements OAuth2User {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-
     Collection<GrantedAuthority> collection = new ArrayList<>();
 
     collection.add(new GrantedAuthority() {
@@ -31,6 +30,7 @@ public class CustomOAuth2User implements OAuth2User {
         return userProfileDto.getRole().name();
       }
     });
+
     return collection;
   }
 
@@ -39,9 +39,11 @@ public class CustomOAuth2User implements OAuth2User {
     return userProfileDto.getName();
   }
 
-  public String getEmail() {return userProfileDto.getEmail(); }
+  public String getEmail() {
+    return userProfileDto.getEmail();
+  }
 
-  public String getUsername() {
-    return userProfileDto.getUsername();
+  public Long getUserId() {
+    return userProfileDto.getUserId();
   }
 }

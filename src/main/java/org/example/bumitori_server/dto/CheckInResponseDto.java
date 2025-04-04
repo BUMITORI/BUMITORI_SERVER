@@ -1,6 +1,7 @@
 package org.example.bumitori_server.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.bumitori_server.entity.CheckIn.EnterStatus;
@@ -8,6 +9,7 @@ import org.example.bumitori_server.entity.UserEntity.Gender;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
