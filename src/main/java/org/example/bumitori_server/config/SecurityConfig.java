@@ -62,7 +62,7 @@ public class SecurityConfig {
     // 경로별 인가 설정
     http.authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/checkin", "/absent/request", "/login").permitAll() // 인증 없이 접근 가능
-        .requestMatchers("/admin/**").authenticated() // JWT가 적용된 상태에서 인증 필요
+        .requestMatchers("/admin/**").hasAuthority("ADMIN")// JWT가 적용된 상태에서 인증 필요
         .anyRequest().authenticated());
 
     // 세션 관리: STATELESS (JWT 사용 예정)
