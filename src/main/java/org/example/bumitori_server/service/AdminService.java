@@ -60,17 +60,17 @@ public class AdminService {
     String roomPrefix = roomId.substring(0, 1);
     String roomNumber = roomId.substring(1);
 
-    return new AbsentResponseDto(
-        user.getUserId(),
-        absent.getAbsentId(),
-        user.getName(),
-        roomPrefix,
-        roomNumber,
-        absent.getReason(),
-        absent.getSpecificReason(),
-        absent.getApproval(),
-        absent.getAbsentDate()
-    );
+    return AbsentResponseDto.builder()
+        .userId(user.getUserId())
+        .absentId(absent.getAbsentId())
+        .name(user.getName())
+        .roomPrefix(roomPrefix)
+        .roomNumber(roomNumber)
+        .reason(absent.getReason())
+        .specificReason(absent.getSpecificReason())
+        .approval(absent.getApproval())
+        .absentDate(absent.getAbsentDate())
+        .build();
   }
 }
 
