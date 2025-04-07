@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.bumitori_server.entity.Absent.Reason;
+import org.example.bumitori_server.enums.Reason;
 
 import java.time.LocalDate;
 

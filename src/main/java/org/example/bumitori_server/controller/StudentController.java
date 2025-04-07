@@ -14,12 +14,12 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class StudentController {
-    private final StudentService studentService;
+  private final StudentService studentService;
 
-    @PostMapping("/checkin")
-    Long checkIn(@RequestParam String rfid) {
-        return studentService.updateCheckInByRfid(rfid);
-    }
+  @PostMapping("/checkin")
+  Long checkIn(@RequestParam String rfid) {
+    return studentService.updateCheckInByRfid(rfid);
+  }
 
   @PostMapping("/absent/request")
   public ResponseEntity<Map<String, String>> requestAbsent(
@@ -28,4 +28,5 @@ public class StudentController {
     studentService.AbsentRequest(requestDto);
     return ResponseEntity.ok(Map.of("message", "미입사 신청이 완료되었습니다"));
   }
+
 }
