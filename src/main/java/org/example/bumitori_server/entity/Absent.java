@@ -2,6 +2,7 @@ package org.example.bumitori_server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.bumitori_server.enums.Reason;
 
 import java.time.LocalDate;
 
@@ -30,8 +31,4 @@ public class Absent {
   private String adminName;
 
   private LocalDate absentDate;
-
-  public enum Reason {
-    SICK_LEAVE, INTERNATIONAL_ACTIVITY, FAMILY_PROMISE, OTHERS
-  }
 }
