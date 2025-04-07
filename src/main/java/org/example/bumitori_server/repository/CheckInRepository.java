@@ -21,4 +21,3 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Long> {
                             @Param("currentStatus") EnterStatus currentStatus,
                             @Param("newStatus") EnterStatus newStatus);
 }
-

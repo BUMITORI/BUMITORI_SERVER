@@ -30,36 +30,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     String token = jwtUtil.resolveToken(request);
 
-    // JWT가 없으면 다음 필터로 넘긴다 (OAuth2 로그인 유도 방지)
-    if (token == null) {
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    if (jwtUtil.validateToken(token)) {
-      String roleStr = jwtUtil.getRoleFromToken(token);
+    if (token != null && jwtUtil.validateToken(token)) {
       Long userId = jwtUtil.getUserIdFromToken(token);
+      String roleStr = jwtUtil.getRoleFromToken(token);
 
-      Role role;
       try {
-        role = Role.valueOf(roleStr.toUpperCase()); // 문자열을 Enum으로 변환 (대소문자 차이 방지)
+        Role role = Role.valueOf(roleStr.toUpperCase());
+
+        UserProfileDto userProfileDto = UserProfileDto.builder()
+            .userId(userId)
+            .role(role)
+            .build();
+
+        CustomOAuth2User principal = new CustomOAuth2User(userProfileDto);
+
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (IllegalArgumentException e) {
-        filterChain.doFilter(request, response);
-        return;
+        // 유효하지 않은 Role이면 인증 안 함
       }
-
-      // CustomOAuth2User로 생성
-      UserProfileDto userProfileDto = UserProfileDto.builder()
-          .userId(userId)
-          .role(role)  // Enum 타입으로 전달
-          .build();
-
-      CustomOAuth2User customOAuth2User = new CustomOAuth2User(userProfileDto);
-
-      UsernamePasswordAuthenticationToken authentication =
-          new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-      authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     filterChain.doFilter(request, response);

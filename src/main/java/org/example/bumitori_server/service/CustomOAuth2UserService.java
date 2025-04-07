@@ -27,7 +27,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     OAuth2User oAuth2User = super.loadUser(userRequest);
-    System.out.println(oAuth2User);
 
     OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
 
@@ -43,8 +42,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
       userAccountRepository.save(userAccount);
     } else {
       existData = UserAccount.builder()
-          .username(existData.getUsername()) // 기존 username 유지
-          .email(oAuth2Response.getEmail()) // email 업데이트
+          .username(existData.getUsername())
+          .email(oAuth2Response.getEmail())
           .build();
 
       userAccountRepository.save(existData);
