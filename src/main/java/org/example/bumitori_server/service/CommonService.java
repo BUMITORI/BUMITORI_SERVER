@@ -23,6 +23,7 @@ import static org.example.bumitori_server.enums.Role.STUDENT;
 @Service
 @RequiredArgsConstructor
 public class CommonService {
+
   private final UserRepository userRepository;
   private final CheckInRepository checkInRepository;
   private final AbsentRepository absentRepository;
@@ -31,15 +32,30 @@ public class CommonService {
   public List<CheckInResponseDto> getCheckInStatus() {
     LocalDate today = LocalDate.now();
 
-    List<UserEntity> students = userRepository.findAll();
-    List<Long> userIds = students.stream().map(UserEntity::getUserId).toList();
+    List<UserEntity> students = userRepository.findAll().stream()
+        .filter(user -> user.getRole() == STUDENT)
+        .sorted(Comparator.comparing(UserEntity::getRoomId))
+        .toList();
+
+    List<Long> userIds = students.stream()
+        .map(UserEntity::getUserId)
+        .toList();
 
     List<CheckIn> checkIns = checkInRepository.findByUserIdIn(userIds);
     Map<Long, CheckIn> checkInMap = checkIns.stream()
         .collect(Collectors.toMap(CheckIn::getUserId, checkIn -> checkIn));
 
-    // ABSENT 상태인데 absentDate가 이미 지난 경우 -> NON_ENTER로 업데이트
+    updateExpiredAbsents(userIds, checkInMap, today);
+    updateOutdatedEntered(checkIns, checkInMap, today);
+
+    return students.stream()
+        .map(user -> toCheckInResponseDto(user, checkInMap.get(user.getUserId()), today))
+        .toList();
+  }
+
+  private void updateExpiredAbsents(List<Long> userIds, Map<Long, CheckIn> checkInMap, LocalDate today) {
     List<Absent> pastAbsents = absentRepository.findByUserIdInAndAbsentDateBefore(userIds, today);
+
     List<Long> recoverableUserIds = pastAbsents.stream()
         .map(Absent::getUserId)
         .filter(userId -> {
@@ -50,51 +66,46 @@ public class CommonService {
         .toList();
 
     if (!recoverableUserIds.isEmpty()) {
-      checkInRepository.bulkUpdateEnterStatus
-          (recoverableUserIds, EnterStatus.ABSENT, EnterStatus.NON_ENTER);
+      checkInRepository.bulkUpdateEnterStatus(recoverableUserIds, EnterStatus.ABSENT, EnterStatus.NON_ENTER);
       recoverableUserIds.forEach(userId -> {
         CheckIn c = checkInMap.get(userId);
         if (c != null) c.setEnterStatus(EnterStatus.NON_ENTER);
       });
     }
+  }
 
-    // 2. ENTERED 상태지만 오늘 날짜가 아닌 경우 -> NON_ENTER로 업데이트
-    List<Long> outdatedEnteredUserIds = checkIns.stream()
+  private void updateOutdatedEntered(List<CheckIn> checkIns, Map<Long, CheckIn> checkInMap, LocalDate today) {
+    List<Long> outdatedUserIds = checkIns.stream()
         .filter(c -> c.getEnterStatus() == EnterStatus.ENTERED)
         .filter(c -> c.getEnterTime() == null || !c.getEnterTime().toLocalDate().equals(today))
         .map(CheckIn::getUserId)
         .toList();
 
-    if (!outdatedEnteredUserIds.isEmpty()) {
-      checkInRepository.bulkUpdateEnterStatus(outdatedEnteredUserIds, EnterStatus.ENTERED, EnterStatus.NON_ENTER);
-      outdatedEnteredUserIds.forEach(userId -> {
+    if (!outdatedUserIds.isEmpty()) {
+      checkInRepository.bulkUpdateEnterStatus(outdatedUserIds, EnterStatus.ENTERED, EnterStatus.NON_ENTER);
+      outdatedUserIds.forEach(userId -> {
         CheckIn c = checkInMap.get(userId);
         if (c != null) c.setEnterStatus(EnterStatus.NON_ENTER);
       });
     }
+  }
 
-    return students.stream()
-        .filter(user -> user.getRole() == STUDENT)
-        .sorted(Comparator.comparing(UserEntity::getRoomId))
-        .map(user -> {
-          CheckIn checkIn = checkInMap.get(user.getUserId());
+  private CheckInResponseDto toCheckInResponseDto(UserEntity user, CheckIn checkIn, LocalDate today) {
+    String roomId = user.getRoomId();
+    String roomPrefix = roomId.substring(0, 1);
+    String roomNumber = roomId.substring(1);
 
-          String roomId = user.getRoomId();
-          String roomPrefix = roomId.substring(0, 1);
-          String roomNumber = roomId.substring(1);
-
-          return CheckInResponseDto.builder()
-              .name(user.getName())
-              .roomPrefix(roomPrefix)
-              .roomNumber(roomNumber)
-              .gender(user.getGender())
-              .enterStatus(checkIn != null ? checkIn.getEnterStatus() : null)
-              .enterTime((checkIn != null && checkIn.getEnterTime() != null &&
-                  checkIn.getEnterTime().toLocalDate().equals(today)) ? checkIn.getEnterTime() : null)
-              .build();
-        })
-        .toList();
+    return CheckInResponseDto.builder()
+        .name(user.getName())
+        .roomPrefix(roomPrefix)
+        .roomNumber(roomNumber)
+        .gender(user.getGender())
+        .enterStatus(checkIn != null ? checkIn.getEnterStatus() : null)
+        .enterTime((checkIn != null && checkIn.getEnterTime() != null &&
+            checkIn.getEnterTime().toLocalDate().equals(today)) ? checkIn.getEnterTime() : null)
+        .build();
   }
 }
+
 
 

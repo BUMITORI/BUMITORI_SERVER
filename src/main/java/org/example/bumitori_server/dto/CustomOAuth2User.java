@@ -3,8 +3,8 @@ package org.example.bumitori_server.dto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
@@ -17,21 +17,12 @@ public class CustomOAuth2User implements OAuth2User {
 
   @Override
   public Map<String, Object> getAttributes() {
-    return null;
+    return Map.of(); // null 대신 빈 Map 반환
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    Collection<GrantedAuthority> collection = new ArrayList<>();
-
-    collection.add(new GrantedAuthority() {
-      @Override
-      public String getAuthority() {
-        return userProfileDto.getRole().name();
-      }
-    });
-
-    return collection;
+    return List.of(() -> userProfileDto.getRole().name());
   }
 
   @Override

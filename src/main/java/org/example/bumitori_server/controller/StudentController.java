@@ -17,15 +17,15 @@ public class StudentController {
   private final StudentService studentService;
 
   @PostMapping("/checkin")
-  Long checkIn(@RequestParam String rfid) {
-    return studentService.updateCheckInByRfid(rfid);
+  public ResponseEntity<Void> checkIn(@RequestParam String rfid) {
+    studentService.updateCheckInByRfid(rfid);
+    return ResponseEntity.ok().build();
   }
 
   @PostMapping("/absent/request")
   public ResponseEntity<Map<String, String>> requestAbsent(
       @RequestBody AbsentRequestDto requestDto) {
-
-    studentService.AbsentRequest(requestDto);
+    studentService.requestAbsent(requestDto);
     return ResponseEntity.ok(Map.of("message", "미입사 신청이 완료되었습니다"));
   }
 

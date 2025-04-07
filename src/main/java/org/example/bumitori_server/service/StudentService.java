@@ -29,7 +29,7 @@ public class StudentService {
 
   //미입사 신청 요청 처리
   @Transactional
-  public void AbsentRequest(AbsentRequestDto requestDto) {
+  public void requestAbsent(AbsentRequestDto requestDto){
     Long userId = getAuthenticatedUserId();
 
     validateUserExists(userId);
@@ -56,6 +56,10 @@ public class StudentService {
     CheckIn checkIn = checkInRepository.findByUserId(user.getUserId())
         .orElseThrow(() -> new RuntimeException("ID가 " + user.getUserId() + "인 사용자의 CheckIn 정보가 없습니다."));
 
+    if (checkIn.getEnterStatus() == EnterStatus.ENTERED) {
+      throw new IllegalStateException("이미 입사 처리된 사용자입니다");
+    }
+
     checkIn.setEnterTime(LocalDateTime.now());
     checkIn.setEnterStatus(EnterStatus.ENTERED);
 
@@ -66,31 +70,30 @@ public class StudentService {
   // 현재 로그인한 사용자 ID 조회
   private Long getAuthenticatedUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User)) {
-      throw new RuntimeException("인증되지 않은 사용자입니다.");
+    if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User userDetails)) {
+      throw new RuntimeException("인증된 사용자 정보가 존재하지 않습니다.");
     }
-    CustomOAuth2User userDetails = (CustomOAuth2User) authentication.getPrincipal();
     return userDetails.getUserId();
   }
 
   // 사용자 존재 여부 검증
   private void validateUserExists(Long userId) {
     if (!userRepository.existsById(userId)) {
-      throw new RuntimeException("ID가 " + userId + "인 사용자를 찾을 수 없습니다.");
+      throw new IllegalArgumentException("ID가 " + userId + "인 사용자를 찾을 수 없습니다.");
     }
   }
 
   // 일요일 여부 검증
   private void validateAbsentDay(LocalDate absentDate) {
     if (absentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
-      throw new RuntimeException("미입사 날짜는 일요일만 가능합니다.");
+      throw new IllegalArgumentException("미입사 날짜는 일요일만 가능합니다.");
     }
   }
 
   // 중복 신청 검증
   private void validateDuplicateAbsent(Long userId, LocalDate absentDate) {
     if (absentRepository.existsByUserIdAndAbsentDate(userId, absentDate)) {
-      throw new RuntimeException("ID가 " + userId + "인 사용자는 " + absentDate + "에 이미 미입사 신청을 했습니다.");
+      throw new IllegalArgumentException("해당 날짜 미입사 신청이 이미 존재합니다.");
     }
   }
 }

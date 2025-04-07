@@ -1,9 +1,6 @@
 package org.example.bumitori_server.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,51 +20,48 @@ public class JWTUtil {
   }
 
   public Long getUserIdFromToken(String token) {
-    Object userIdObj = Jwts.parser()
-        .verifyWith(secretKey)
-        .build()
-        .parseSignedClaims(token)
-        .getPayload()
-        .get("userId");
-    if (userIdObj instanceof Number) {
-      return ((Number) userIdObj).longValue();
-    } else if (userIdObj instanceof String) {
-      return Long.parseLong((String) userIdObj);
-    } else {
-      throw new IllegalArgumentException("Invalid userId type in token");
-    }  }
+    Claims claims = parseToken(token);
+    Object userIdObj = claims.get("userId");
+    if (userIdObj instanceof Number number) return number.longValue();
+    if (userIdObj instanceof String str) return Long.parseLong(str);
+    throw new IllegalArgumentException("토큰에 유효한 userId가 포함되어 있지 않습니다.");
+  }
 
   public String getRoleFromToken(String token) {
-    return Jwts.parser().verifyWith(secretKey)
-        .build().parseSignedClaims(token).getPayload()
-        .get("role", String.class);
+    return parseToken(token).get("role", String.class);
   }
 
   public boolean validateToken(String token) {
     try {
-      return !Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-    } catch (ExpiredJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+      return !parseToken(token).getExpiration().before(new Date());
+    } catch (JwtException | IllegalArgumentException e) {
       return false;
     }
+  }
+
+  private Claims parseToken(String token) {
+    return Jwts.parser()
+        .verifyWith(secretKey)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
   }
 
   public String createJwt(Long userId, String role, Long expiredMs) {
     return Jwts.builder()
         .claim("userId", userId)
         .claim("role", role)
-        .issuedAt(new Date(System.currentTimeMillis()))
+        .issuedAt(new Date())
         .expiration(new Date(System.currentTimeMillis() + expiredMs))
         .signWith(secretKey)
         .compact();
   }
 
   public String resolveToken(HttpServletRequest request) {
-    // 우선 헤더에서 토큰 추출
     String bearerToken = request.getHeader("Authorization");
     if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7);
     }
-    // 헤더에 없으면 쿠키에서 토큰 추출
     if (request.getCookies() != null) {
       for (Cookie cookie : request.getCookies()) {
         if ("Authorization".equals(cookie.getName())) {
@@ -75,7 +69,6 @@ public class JWTUtil {
         }
       }
     }
-    System.out.println("sadfdas");
     return null;
   }
 }

@@ -27,17 +27,20 @@ public class AdminService {
   private final UserRepository userRepository;
   private final CheckInRepository checkInRepository;
 
+  // 미입사 신청 전체 목록 조회
   public List<AbsentResponseDto> getAbsentRequests() {
     return absentRepository.findAll().stream()
         .map(this::convertToDto)
         .collect(Collectors.toList());
   }
 
+  // 미입사 신청 상세 조회
   public AbsentResponseDto getAbsentDetail(Long absentId) {
     Absent absent = findAbsentById(absentId);
     return convertToDto(absent);
   }
 
+  // 미입사 신청 승인 처리
   public String approveAbsent(Long absentId) {
     Long adminUserId = getAuthenticatedUserId();
     UserEntity admin = findUserById(adminUserId);
@@ -56,24 +59,7 @@ public class AdminService {
     return targetUser.getName() + "님 미입사 신청이 승인되었습니다";
   }
 
-  private Absent findAbsentById(Long id) {
-    return absentRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException
-            ("ID가 " + id + "인 미입사 신청이 존재하지 않습니다."));
-  }
-
-  private UserEntity findUserById(Long userId) {
-    return userRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException
-            ("ID가 " + userId + "인 사용자를 찾을 수 없습니다."));
-  }
-
-  private CheckIn findCheckInByUserId(Long userId) {
-    return checkInRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException
-            ("ID가 " + userId + "인 사용자의 CheckIn 정보가 없습니다."));
-  }
-
+  // 사용자 ID 조회
   private Long getAuthenticatedUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User user)) {
@@ -82,6 +68,25 @@ public class AdminService {
     return user.getUserId();
   }
 
+  // 미입사 신청 조회
+  private Absent findAbsentById(Long id) {
+    return absentRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("ID가 " + id + "인 미입사 신청이 존재하지 않습니다."));
+  }
+
+  // 사용자 ID로 조회
+  private UserEntity findUserById(Long userId) {
+    return userRepository.findByUserId(userId)
+        .orElseThrow(() -> new RuntimeException("ID가 " + userId + "인 사용자를 찾을 수 없습니다."));
+  }
+
+  // CheckIn 정보 조회
+  private CheckIn findCheckInByUserId(Long userId) {
+    return checkInRepository.findByUserId(userId)
+        .orElseThrow(() -> new RuntimeException("ID가 " + userId + "인 사용자의 CheckIn 정보가 없습니다."));
+  }
+
+  // Absent -> DTO 변환
   private AbsentResponseDto convertToDto(Absent absent) {
     UserEntity user = findUserById(absent.getUserId());
 
@@ -102,6 +107,3 @@ public class AdminService {
         .build();
   }
 }
-
-
-
