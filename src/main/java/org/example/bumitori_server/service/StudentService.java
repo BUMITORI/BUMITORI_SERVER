@@ -41,7 +41,7 @@ public class StudentService {
         .reason(requestDto.getReason())
         .specificReason(requestDto.getSpecificReason())
         .absentDate(requestDto.getAbsentDate())
-        .approval(false) // 명시적으로 false 설정
+        .approval(false)
         .build();
 
     absentRepository.save(absent);
