@@ -22,10 +22,10 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-
   private final AbsentRepository absentRepository;
   private final UserRepository userRepository;
   private final CheckInRepository checkInRepository;
+  private final SmsService smsService;
 
   //미입사 신청 요청 처리
   @Transactional
@@ -36,16 +36,29 @@ public class StudentService {
     validateAbsentDay(requestDto.getAbsentDate());
     validateDuplicateAbsent(userId, requestDto.getAbsentDate());
 
+    UserEntity user = userRepository.findById(userId)
+        .orElseThrow(() -> new IllegalStateException("user를 찾을 수 없습니다"));
+
+    Long absentId = absentRepository.findMaxId() + 1;
+
     Absent absent = Absent.builder()
         .userId(userId)
         .reason(requestDto.getReason())
         .specificReason(requestDto.getSpecificReason())
         .absentDate(requestDto.getAbsentDate())
-        .approval(false) // 명시적으로 false 설정
+        .approval(false)
         .build();
+
+    smsService.sendToAdmin(
+        user.getName(),
+        requestDto.getAbsentDate(),
+        user.getRoomId(),
+        absentId
+    );
 
     absentRepository.save(absent);
   }
+
 
   // RFID로 학생 입소 처리
   @Transactional
@@ -71,7 +84,7 @@ public class StudentService {
   private Long getAuthenticatedUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User userDetails)) {
-      throw new RuntimeException("인증된 사용자 정보가 존재하지 않습니다.");
+      throw new IllegalStateException("인증된 사용자 정보가 존재하지 않습니다.");
     }
     return userDetails.getUserId();
   }
