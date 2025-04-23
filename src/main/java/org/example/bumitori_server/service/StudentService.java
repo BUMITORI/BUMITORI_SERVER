@@ -53,7 +53,8 @@ public class StudentService {
         user.getName(),
         requestDto.getAbsentDate(),
         user.getRoomId(),
-        absentId
+        absentId,
+        requestDto.getReason()
     );
 
     absentRepository.save(absent);
