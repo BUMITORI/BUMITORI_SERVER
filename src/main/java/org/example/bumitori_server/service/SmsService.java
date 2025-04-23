@@ -5,6 +5,7 @@ import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.service.DefaultMessageService;
+import org.example.bumitori_server.enums.Reason;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +44,18 @@ public class SmsService {
     );
   }
 
-  public void sendToAdmin(String name, LocalDate date, String roomId, long absentId) {
+  public void sendToAdmin(String name, LocalDate date, String roomId, long absentId, Reason reason) {
     String formattedDate = date.format(DATE_FORMATTER);
     String recipientNumber = determineRecipientByRoom(roomId);
     String absentRequestUrl = absentUrlPrefix + absentId;
 
-    String messageText = String.format("%s 학생이 %s 미입사 신청을 했습니다. %s",
-        name, formattedDate, absentRequestUrl);
+    String messageText = String.format(
+        "%s 학생이 %s 미입사를 신청했습니다.\n사유 : %s\n신청 확인하기\n%s",
+        name,
+        formattedDate,
+        reason,
+        absentRequestUrl
+    );
 
     Message message = new Message();
     message.setFrom(smsFrom);
