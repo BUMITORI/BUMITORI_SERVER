@@ -44,7 +44,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
                 "/login", "/checkin",
-                "/oauth2/**", "/login/oauth2/**"
+                "/oauth2/**", "/login/oauth2/**",
+                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
             ).permitAll()
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
             .anyRequest().authenticated()
@@ -69,6 +70,7 @@ public class SecurityConfig {
     return http.build();
   }
 
+
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
@@ -76,7 +78,8 @@ public class SecurityConfig {
     // 로컬 개발용 허용 도메인
     config.setAllowedOrigins(List.of(
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "http://localhost:8080"
     ));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
