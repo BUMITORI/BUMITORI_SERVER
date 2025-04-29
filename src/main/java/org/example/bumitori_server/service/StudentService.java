@@ -29,7 +29,7 @@ public class StudentService {
 
   //미입사 신청 요청 처리
   @Transactional
-  public void requestAbsent(AbsentRequestDto requestDto){
+  public void requestAbsent(AbsentRequestDto requestDto) {
     Long userId = getAuthenticatedUserId();
 
     validateUserExists(userId);
@@ -49,6 +49,8 @@ public class StudentService {
         .approval(false)
         .build();
 
+    absentRepository.save(absent);
+
     smsService.sendToAdmin(
         user.getName(),
         requestDto.getAbsentDate(),
@@ -56,10 +58,7 @@ public class StudentService {
         absentId,
         requestDto.getReason()
     );
-
-    absentRepository.save(absent);
   }
-
 
   // RFID로 학생 입소 처리
   @Transactional
