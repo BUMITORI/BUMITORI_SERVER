@@ -28,12 +28,13 @@ public class SwaggerConfig {
 
     Server server = new Server();
     server.setUrl("https://back-bumitori.jamkris.kro.kr/");
+//    server.setUrl("http://localhost:8080/");
 
     return new OpenAPI()
         .info(new Info()
             .title("BUMITORI API")
             .version("v1")
-            .description("Bumitori 서비스 API 명세서")
+            .description("Bumitori API 명세서")
         )
         .addSecurityItem(securityRequirement)
         .components(components)
