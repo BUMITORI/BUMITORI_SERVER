@@ -16,7 +16,7 @@ import java.util.List;
 public class CommonController {
   private final CommonService commonService;
 
-  @Operation(summary = "전체 입실 현황 조회", description = "모든 사용자의 입실 여부 조회")
+  @Operation(summary = "전체 입사 현황 조회", description = "모든 학생 입사 여부 조회")
   @GetMapping("/")
   public List<CheckInResponseDto> getCheckInStatus() {
     return commonService.getCheckInStatus();

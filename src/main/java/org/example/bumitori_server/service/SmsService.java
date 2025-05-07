@@ -50,7 +50,7 @@ public class SmsService {
     String absentRequestUrl = absentUrlPrefix + absentId;
 
     String messageText = String.format(
-        "%s 학생이 %s 미입사를 신청했습니다.\n사유 : %s\n신청 확인하기\n%s",
+        "%s 학생이 %s에 미입사를 신청했습니다.\n사유 : %s\n신청 확인하기\n%s",
         name,
         formattedDate,
         reason,

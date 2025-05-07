@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Tag(name = "학생 API", description = "학생용 입실 및 미입사 신청 기능")
+@Tag(name = "학생 API", description = "학생용 입사 및 미입사 신청 기능")
 @RestController
 @RequiredArgsConstructor
 public class StudentController {
   private final StudentService studentService;
 
-  @Operation(summary = "RFID 입실 처리", description = "학생의 RFID 번호를 받아 입실 처리 수행")
+  @Operation(summary = "RFID 입실 처리", description = "입실 처리 수행")
   @PostMapping("/checkin")
   public ResponseEntity<Void> checkIn(@RequestParam String rfid) {
     studentService.updateCheckInByRfid(rfid);
     return ResponseEntity.ok().build();
   }
 
-  @Operation(summary = "미입사 신청", description = "학생이 미입사 신청을 등록")
+  @Operation(summary = "미입사 신청", description = "미입사 신청 등록")
   @PostMapping("/absent/request")
   public ResponseEntity<Map<String, String>> requestAbsent(
       @RequestBody AbsentRequestDto requestDto) {
