@@ -3,7 +3,8 @@ package org.example.bumitori_server.enums;
 
 public enum Role {
   ADMIN("ADMIN"),
-  STUDENT("STUDENT");
+  STUDENT("STUDENT"),
+  TEACHER("TEACHER");
 
   private final String role;
 

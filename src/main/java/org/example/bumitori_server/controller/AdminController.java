@@ -33,7 +33,7 @@ public class AdminController {
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "미입사 신청 승인 처리", description = "미입사 신청을 승인 처리")
+  @Operation(summary = "미입사 신청 승인 처리", description = "미입사 신청 승인 처리")
   @PatchMapping("/absent/{absentId}")
   public ResponseEntity<Map<String, String>> approveAbsent(@PathVariable Long absentId) {
     String message = adminService.approveAbsent(absentId);
