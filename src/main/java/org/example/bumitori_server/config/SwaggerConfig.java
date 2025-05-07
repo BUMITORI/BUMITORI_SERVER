@@ -28,7 +28,6 @@ public class SwaggerConfig {
 
     Server server = new Server();
     server.setUrl("https://back-bumitori.jamkris.kro.kr/");
-//    server.setUrl("http://localhost:8080/");
 
     return new OpenAPI()
         .info(new Info()
