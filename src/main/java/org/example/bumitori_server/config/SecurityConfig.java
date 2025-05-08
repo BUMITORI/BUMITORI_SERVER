@@ -75,21 +75,18 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
 
-    // 로컬 개발용 허용 도메인
-    config.setAllowedOrigins(List.of(
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
+    config.setAllowedOriginPatterns(List.of(
         "http://localhost:5173",
-        "http://127.0.0.1:5173"
+        "https://*.jamkris.kro.kr"
     ));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);
+    config.setExposedHeaders(List.of("Authorization","Set-Cookie"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
     return source;
   }
+
 }
