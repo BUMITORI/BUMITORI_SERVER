@@ -10,7 +10,6 @@ import java.util.List;
 public interface AbsentRepository extends JpaRepository<Absent, Long> {
   List<Absent> findByUserIdInAndAbsentDateBefore(List<Long> userIds, LocalDate date);
   boolean existsByUserIdAndAbsentDate(Long userId, LocalDate absentDate);
-  @Query("SELECT COALESCE(MAX(a.id), 0) FROM Absent a")
+  @Query("SELECT COALESCE(MAX(a.absentId), 0) FROM Absent a")
   Long findMaxId();
-
 }

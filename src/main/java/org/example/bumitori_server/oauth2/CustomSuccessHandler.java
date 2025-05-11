@@ -20,43 +20,48 @@ import java.util.Optional;
 
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
   private final JWTUtil jwtUtil;
   private final UserRepository userRepository;
 
-  public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository) {
-
+  public CustomSuccessHandler(
+      JWTUtil jwtUtil,
+      UserRepository userRepository
+  ) {
     this.jwtUtil = jwtUtil;
     this.userRepository = userRepository;
   }
 
   @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+  public void onAuthenticationSuccess(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Authentication authentication
+  ) throws IOException, ServletException {
+    CustomOAuth2User customUser = (CustomOAuth2User) authentication.getPrincipal();
+    String email = customUser.getEmail();
 
-    //OAuth2User
-    CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
-    String email = customUserDetails.getEmail();
-    Optional<UserEntity> user = userRepository.findByEmail(email);
+    Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+    UserEntity user = userOpt.orElseThrow();
     Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-    Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-    GrantedAuthority auth = iterator.next();
-    String role = String.valueOf(user.get().getRole());
-    Long userId = user.get().getUserId();
+    Iterator<? extends GrantedAuthority> it = authorities.iterator();
+    String role = String.valueOf(user.getRole());
+    Long userId = user.getUserId();
 
     String token = jwtUtil.createJwt(userId, role, 60 * 60 * 60L);
+
+    response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    response.setHeader("Access-Control-Allow-Credentials", "true");
 
     response.addCookie(createCookie("Authorization", token));
     response.sendRedirect("http://localhost:5173/");
   }
 
   private Cookie createCookie(String key, String value) {
-
     Cookie cookie = new Cookie(key, value);
     cookie.setMaxAge(60 * 60 * 60);
-    //cookie.setSecure(true);
     cookie.setPath("/");
     cookie.setHttpOnly(true);
-
     return cookie;
   }
 }

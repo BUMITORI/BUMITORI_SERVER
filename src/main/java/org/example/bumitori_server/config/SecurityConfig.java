@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bumitori_server.jwt.JWTUtil;
 import org.example.bumitori_server.jwt.JwtAuthenticationFilter;
-import org.example.bumitori_server.oauth2.CustomSuccessHandler;
 import org.example.bumitori_server.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
   private final CustomOAuth2UserService customOAuth2UserService;
-  private final CustomSuccessHandler customSuccessHandler;
+  private final org.example.bumitori_server.oauth2.CustomSuccessHandler customSuccessHandler;
   private final JWTUtil jwtUtil;
 
   @Bean
@@ -77,7 +76,10 @@ public class SecurityConfig {
 
     config.setAllowedOriginPatterns(List.of(
         "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:[*]",
         "https://*.jamkris.kro.kr"
+        //프론트 배포 주소 추가하기
     ));
     config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
@@ -88,5 +90,4 @@ public class SecurityConfig {
     source.registerCorsConfiguration("/**", config);
     return source;
   }
-
 }
