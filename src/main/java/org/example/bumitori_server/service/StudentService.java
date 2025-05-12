@@ -39,8 +39,6 @@ public class StudentService {
     UserEntity user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalStateException("user를 찾을 수 없습니다"));
 
-    Long absentId = absentRepository.findMaxId() + 1;
-
     Absent absent = Absent.builder()
         .userId(userId)
         .reason(requestDto.getReason())
@@ -51,14 +49,16 @@ public class StudentService {
 
     absentRepository.save(absent);
 
-    smsService.sendToAdmin(
-        user.getName(),
-        user.getStudentNo(),
-        requestDto.getAbsentDate(),
-        user.getRoomId(),
-        absentId,
-        requestDto.getReason()
-    );
+//    Long absentId = absentRepository.findMaxId();
+//
+//    smsService.sendToAdmin(
+//        user.getName(),
+//        user.getStudentNo(),
+//        requestDto.getAbsentDate(),
+//        user.getRoomId(),
+//        absentId,
+//        requestDto.getReason()
+//    );
   }
 
   // RFID로 학생 입소 처리

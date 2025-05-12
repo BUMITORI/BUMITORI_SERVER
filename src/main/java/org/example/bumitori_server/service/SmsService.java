@@ -5,7 +5,6 @@ import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.service.DefaultMessageService;
-import org.example.bumitori_server.entity.Teacher;
 import org.example.bumitori_server.enums.Reason;
 import org.example.bumitori_server.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -49,11 +47,11 @@ public class SmsService {
 
   public void sendToAdmin(
       String name,
+      int studentNo,
       LocalDate date,
       String roomId,
       long absentId,
-      Reason reason,
-      int studentNo
+      Reason reason
   ) {
     String formattedDate = date.format(DATE_FORMATTER);
     String adminNumber   = determineRecipientByRoom(roomId);
@@ -68,7 +66,7 @@ public class SmsService {
     GradeClass gc = parseGradeAndClass(studentNo);
     teacherRepository.findByGradeAndClassNum(gc.grade(), gc.classNum())
         .ifPresent(teacher -> sendSms(
-            teacher.getPhone(),
+            String.valueOf(teacher.getPhone()),
             "미입사 신청 알림 (담임)",
             text
         ));
