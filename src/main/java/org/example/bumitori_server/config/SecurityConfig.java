@@ -42,6 +42,7 @@ public class SecurityConfig {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
+                "/",
                 "/login", "/checkin",
                 "/oauth2/**", "/login/oauth2/**",
                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
@@ -68,7 +69,6 @@ public class SecurityConfig {
 
     return http.build();
   }
-
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
