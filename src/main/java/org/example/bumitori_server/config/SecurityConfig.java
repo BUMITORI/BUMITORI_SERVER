@@ -59,11 +59,9 @@ public class SecurityConfig {
         .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) -> {
-              if (request.getRequestURI().equals("/")) {
-                response.sendRedirect("/oauth2/authorization/google");
-              } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              }
+              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+              response.setContentType("application/json");
+              response.getWriter().write("{\"message\": \"Unauthorized. Please login.\"}");
             })
         );
 
