@@ -4,6 +4,7 @@ build/*
 !build/libs/
 !build/libs/**
 !gradle/wrapper/gradle-wrapper.jar
+.env
 
 ### STS ###
 .apt_generated
