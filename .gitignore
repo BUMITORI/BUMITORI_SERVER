@@ -6,6 +6,7 @@ build/*
 !gradle/wrapper/gradle-wrapper.jar
 .env
 
+
 ### STS ###
 .apt_generated
 .classpath
