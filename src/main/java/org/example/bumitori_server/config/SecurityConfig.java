@@ -27,15 +27,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private static final String[] PUBLIC_URLS = {
-      "/", "/login", "/checkin",
-      "/oauth2/**", "/login/oauth2/**", "/oauth2/authorization/**",
-      "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
-  };
-
   private final CustomOAuth2UserService customOAuth2UserService;
   private final org.example.bumitori_server.oauth2.CustomSuccessHandler customSuccessHandler;
   private final JWTUtil jwtUtil;
+
+  private static final String[] PUBLIC_URLS = {
+      "/", "/login", "/checkin",
+      "/oauth2/authorization/google",
+      "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
+  };
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
