@@ -1,10 +1,12 @@
 package org.example.bumitori_server.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import org.example.bumitori_server.enums.Role;
 
 @Entity
 @Getter
@@ -20,9 +22,6 @@ public class Teacher {
   private Long userId;
 
   private String name;
-
-  @Enumerated(EnumType.STRING)
-  private Role role;
 
   @Min(1) @Max(3)
   private Integer grade;

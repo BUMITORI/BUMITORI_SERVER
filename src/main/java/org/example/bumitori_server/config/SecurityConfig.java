@@ -27,6 +27,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+  private static final String[] PUBLIC_URLS = {
+      "/", "/login", "/checkin",
+      "/oauth2/**", "/login/oauth2/**", "/oauth2/authorization/**",
+      "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
+  };
+
   private final CustomOAuth2UserService customOAuth2UserService;
   private final org.example.bumitori_server.oauth2.CustomSuccessHandler customSuccessHandler;
   private final JWTUtil jwtUtil;
@@ -41,19 +47,13 @@ public class SecurityConfig {
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/",
-                "/login", "/checkin",
-                "/oauth2/**", "/login/oauth2/**",
-                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
-            ).permitAll()
-            .requestMatchers("/admin/**").hasAuthority("ADMIN")
+            .requestMatchers(PUBLIC_URLS).permitAll()
+            .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "TEACHER")
             .anyRequest().authenticated()
         )
         .oauth2Login(oauth2 -> oauth2
             .loginPage("/oauth2/authorization/google")
-            .userInfoEndpoint(userInfo
-                -> userInfo.userService(customOAuth2UserService))
+            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
             .successHandler(customSuccessHandler)
         )
         .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
@@ -77,12 +77,11 @@ public class SecurityConfig {
         "http://127.0.0.1:5173",
         "http://localhost:[*]",
         "https://*.jamkris.kro.kr"
-        //프론트 배포 주소 추가하기
     ));
-    config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);
-    config.setExposedHeaders(List.of("Authorization","Set-Cookie"));
+    config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
