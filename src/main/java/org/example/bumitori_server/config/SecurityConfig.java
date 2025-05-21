@@ -33,9 +33,10 @@ public class SecurityConfig {
 
   private static final String[] PUBLIC_URLS = {
       "/", "/login", "/checkin",
+      "/oauth2/**", "/login/oauth2/**",
       "/oauth2/authorization/google",
       "/v3/api-docs/**", "/swagger-ui/**",
-      "/swagger-resources/**", "/webjars/**"
+      "/swagger-resources/**", "/webjars/**",
   };
 
   @Bean

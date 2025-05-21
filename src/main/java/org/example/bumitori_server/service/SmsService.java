@@ -6,7 +6,6 @@ import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.example.bumitori_server.enums.Reason;
-import org.example.bumitori_server.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 public class SmsService {
 
   private final DefaultMessageService messageService;
-  private final TeacherRepository teacherRepository;
 
   @Value("${sms.from}")
   private String smsFrom;
@@ -34,20 +32,17 @@ public class SmsService {
 
   public SmsService(
       @Value("${sms.api.key}") String smsApiKey,
-      @Value("${sms.api.secret}") String smsSecret,
-      TeacherRepository teacherRepository
+      @Value("${sms.api.secret}") String smsSecret
   ) {
     this.messageService = NurigoApp.INSTANCE.initialize(
         smsApiKey,
         smsSecret,
         "https://api.coolsms.co.kr"
     );
-    this.teacherRepository = teacherRepository;
   }
 
   public void sendToAdmin(
       String name,
-      int studentNo,
       LocalDate date,
       String roomId,
       long absentId,
@@ -62,14 +57,6 @@ public class SmsService {
     );
 
     sendSms(adminNumber, "미입사 신청 알림", text);
-
-    GradeClass gc = parseGradeAndClass(studentNo);
-    teacherRepository.findByGradeAndClassNum(gc.grade(), gc.classNum())
-        .ifPresent(teacher -> sendSms(
-            String.valueOf(teacher.getPhone()),
-            "미입사 신청 알림 (담임)",
-            text
-        ));
   }
 
   private void sendSms(String to, String subject, String text) {
@@ -87,14 +74,6 @@ public class SmsService {
       log.error("SMS 전송 중 예외 발생", e);
     }
   }
-
-  private GradeClass parseGradeAndClass(int studentNo) {
-    int grade    = studentNo / 1000;
-    int classNum = (studentNo % 1000) / 100;
-    return new GradeClass(grade, classNum);
-  }
-
-  private record GradeClass(int grade, int classNum) {}
 
   private String determineRecipientByRoom(String roomId) {
     String prefix = roomId.substring(0, 2);

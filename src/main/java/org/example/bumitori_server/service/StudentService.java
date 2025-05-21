@@ -53,7 +53,6 @@ public class StudentService {
 //
 //    smsService.sendToAdmin(
 //        user.getName(),
-//        user.getStudentNo(),
 //        requestDto.getAbsentDate(),
 //        user.getRoomId(),
 //        absentId,
