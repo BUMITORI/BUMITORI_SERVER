@@ -58,7 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (IllegalArgumentException e) {
-        // 유효하지 않은 Role이면 인증 안 함
       }
     }
 

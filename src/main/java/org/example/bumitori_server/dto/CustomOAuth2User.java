@@ -17,7 +17,7 @@ public class CustomOAuth2User implements OAuth2User {
 
   @Override
   public Map<String, Object> getAttributes() {
-    return Map.of(); // null 대신 빈 Map 반환
+    return Map.of();
   }
 
   @Override

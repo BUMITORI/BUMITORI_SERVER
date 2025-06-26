@@ -27,8 +27,8 @@ public class SwaggerConfig {
         .addSecuritySchemes(jwtSchemeName, securityScheme);
 
     Server server = new Server();
-//    server.setUrl("http://localhost:8080");
-    server.setUrl("https://back-bumitori.jamkris.kro.kr");
+    server.setUrl("http://localhost:8080");
+//    server.setUrl("https://back-bumitori.jamkris.kro.kr");
 
     return new OpenAPI()
         .info(new Info()
